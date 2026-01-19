@@ -189,7 +189,7 @@
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
             <input type="file" class="file-input" id="file-0" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-0">
+            <input type="text" class="team-name-input" id="edit-name-0" placeholder="隊伍名稱">
             <div class="score-display" id="edit-score-0">0</div>
             <div class="controls">
                 <button class="btn btn-minus" onclick="changeScore(0, -10)">-</button>
@@ -203,11 +203,11 @@
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
             <input type="file" class="file-input" id="file-1" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-1">
+            <input type="text" class="team-name-input" id="edit-name-1" placeholder="隊伍名稱">
             <div class="score-display" id="edit-score-1">0</div>
             <div class="controls">
-                <button class="btn btn-minus" onclick="changeScore(1, -1)">-</button>
-                <button class="btn btn-plus" onclick="changeScore(1, 1)">+</button>
+                <button class="btn btn-minus" onclick="changeScore(1, -10)">-</button>
+                <button class="btn btn-plus" onclick="changeScore(1, 10)">+</button>
             </div>
         </div>
 
@@ -220,8 +220,8 @@
             <input type="text" class="team-name-input" id="edit-name-2">
             <div class="score-display" id="edit-score-2">0</div>
             <div class="controls">
-                <button class="btn btn-minus" onclick="changeScore(2, -1)">-</button>
-                <button class="btn btn-plus" onclick="changeScore(2, 1)">+</button>
+                <button class="btn btn-minus" onclick="changeScore(2, -10)">-</button>
+                <button class="btn btn-plus" onclick="changeScore(2, 10)">+</button>
             </div>
         </div>
 
@@ -231,7 +231,7 @@
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
             <input type="file" class="file-input" id="file-3" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-3">
+            <input type="text" class="team-name-input" id="edit-name-3" placeholder="隊伍名稱">
             <div class="score-display" id="edit-score-3">0</div>
             <div class="controls">
                 <button class="btn btn-minus" onclick="changeScore(3, -10)">-</button>
@@ -252,21 +252,25 @@
             teams: [
                 {
                     name: '紅隊',
+                    members: '',
                     score: 0,
                     image: 'https://placehold.co/150/FF5733/FFFFFF?text=A'
                 },
                 {
                     name: '藍隊',
+                    members: '',
                     score: 0,
                     image: 'https://placehold.co/150/33C1FF/FFFFFF?text=B'
                 },
                 {
                     name: '綠隊',
+                    members: '',
                     score: 0,
                     image: 'https://placehold.co/150/27AE60/FFFFFF?text=C'
                 },
                 {
                     name: '黃隊',
+                    members: '',
                     score: 0,
                     image: 'https://placehold.co/150/F1C40F/FFFFFF?text=D'
                 }
@@ -294,6 +298,16 @@
 
         function saveData(data) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function resetAllScores() {
+            if (confirm('確定要將所有隊伍的分數歸零嗎？')) {
+                state.teams.forEach(team => {
+                    team.score = 0;
+                });
+                saveData(state);
+                renderEditor();
+            }
         }
 
         let state = loadData();
@@ -342,6 +356,13 @@
         document.querySelectorAll('.team-name-input').forEach((input, index) => {
             input.addEventListener('input', function() {
                 state.teams[index].name = this.value || defaultData.teams[index].name;
+                saveData(state);
+            });
+        });
+
+        document.querySelectorAll('.team-members-input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                state.teams[index].members = this.value;
                 saveData(state);
             });
         });
