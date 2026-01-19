@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隊伍分數控制畫面</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --score-color: #e74c3c;
+            --btn-plus: #27ae60;
+            --btn-minus: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .scoreboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .team-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-image-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #eee;
+            margin-bottom: 15px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .team-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .team-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .team-image-container:hover .team-image-overlay {
+            opacity: 1;
+        }
+
+        .team-name-input {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 4px 8px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--score-color);
+            margin: 10px 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-plus {
+            background-color: var(--btn-plus);
+        }
+        .btn-plus:hover {
+            background-color: #219150;
+        }
+
+        .btn-minus {
+            background-color: var(--btn-minus);
+        }
+        .btn-minus:hover {
+            background-color: #a93226;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .scoreboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>隊伍分數控制畫面</h1>
+    <div class="subtitle">在這裡修改分數、隊名與圖片，顯示畫面會自動同步</div>
+
+    <div class="scoreboard-container">
+        <div class="team-card" data-index="0">
+            <div class="team-image-container" onclick="triggerFileUpload(0)">
+                <img src="" alt="Team A" class="team-image" id="edit-img-0">
+                <div class="team-image-overlay">點擊更換圖片</div>
+            </div>
+            <input type="file" class="file-input" id="file-0" accept="image/*">
+            <input type="text" class="team-name-input" id="edit-name-0">
+            <div class="score-display" id="edit-score-0">0</div>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="changeScore(0, -1)">-</button>
+                <button class="btn btn-plus" onclick="changeScore(0, 1)">+</button>
+            </div>
+        </div>
+
+        <div class="team-card" data-index="1">
+            <div class="team-image-container" onclick="triggerFileUpload(1)">
+                <img src="" alt="Team B" class="team-image" id="edit-img-1">
+                <div class="team-image-overlay">點擊更換圖片</div>
+            </div>
+            <input type="file" class="file-input" id="file-1" accept="image/*">
+            <input type="text" class="team-name-input" id="edit-name-1">
+            <div class="score-display" id="edit-score-1">0</div>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="changeScore(1, -1)">-</button>
+                <button class="btn btn-plus" onclick="changeScore(1, 1)">+</button>
+            </div>
+        </div>
+
+        <div class="team-card" data-index="2">
+            <div class="team-image-container" onclick="triggerFileUpload(2)">
+                <img src="" alt="Team C" class="team-image" id="edit-img-2">
+                <div class="team-image-overlay">點擊更換圖片</div>
+            </div>
+            <input type="file" class="file-input" id="file-2" accept="image/*">
+            <input type="text" class="team-name-input" id="edit-name-2">
+            <div class="score-display" id="edit-score-2">0</div>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="changeScore(2, -1)">-</button>
+                <button class="btn btn-plus" onclick="changeScore(2, 1)">+</button>
+            </div>
+        </div>
+
+        <div class="team-card" data-index="3">
+            <div class="team-image-container" onclick="triggerFileUpload(3)">
+                <img src="" alt="Team D" class="team-image" id="edit-img-3">
+                <div class="team-image-overlay">點擊更換圖片</div>
+            </div>
+            <input type="file" class="file-input" id="file-3" accept="image/*">
+            <input type="text" class="team-name-input" id="edit-name-3">
+            <div class="score-display" id="edit-score-3">0</div>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="changeScore(3, -1)">-</button>
+                <button class="btn btn-plus" onclick="changeScore(3, 1)">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        建議同時在另一個視窗開啟 index.html 作為「顯示畫面」<br>
+        兩個畫面會透過瀏覽器的本地儲存自動同步資料
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'scoreboardDataV1';
+
+        const defaultData = {
+            teams: [
+                {
+                    name: '紅隊',
+                    score: 0,
+                    image: 'https://placehold.co/150/FF5733/FFFFFF?text=A'
+                },
+                {
+                    name: '藍隊',
+                    score: 0,
+                    image: 'https://placehold.co/150/33C1FF/FFFFFF?text=B'
+                },
+                {
+                    name: '綠隊',
+                    score: 0,
+                    image: 'https://placehold.co/150/27AE60/FFFFFF?text=C'
+                },
+                {
+                    name: '黃隊',
+                    score: 0,
+                    image: 'https://placehold.co/150/F1C40F/FFFFFF?text=D'
+                }
+            ]
+        };
+
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                return defaultData;
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                if (!parsed.teams || parsed.teams.length !== 4) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                    return defaultData;
+                }
+                return parsed;
+            } catch (e) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                return defaultData;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        let state = loadData();
+
+        function renderEditor() {
+            state.teams.forEach((team, index) => {
+                const img = document.getElementById('edit-img-' + index);
+                const nameInput = document.getElementById('edit-name-' + index);
+                const scoreDisplay = document.getElementById('edit-score-' + index);
+                if (img) img.src = team.image;
+                if (nameInput) nameInput.value = team.name;
+                if (scoreDisplay) scoreDisplay.textContent = team.score;
+            });
+        }
+
+        function changeScore(index, delta) {
+            const team = state.teams[index];
+            const next = team.score + delta;
+            team.score = next < 0 ? 0 : next;
+            saveData(state);
+            renderEditor();
+        }
+
+        function triggerFileUpload(index) {
+            const input = document.getElementById('file-' + index);
+            if (input) input.click();
+        }
+
+        function handleFileChange(index, fileInput) {
+            if (!fileInput.files || !fileInput.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                state.teams[index].image = e.target.result;
+                saveData(state);
+                renderEditor();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        document.querySelectorAll('.file-input').forEach((input, index) => {
+            input.addEventListener('change', function() {
+                handleFileChange(index, this);
+            });
+        });
+
+        document.querySelectorAll('.team-name-input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                state.teams[index].name = this.value || defaultData.teams[index].name;
+                saveData(state);
+            });
+        });
+
+        renderEditor();
+    </script>
+</body>
+</html>
+
