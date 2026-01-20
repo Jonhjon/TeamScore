@@ -170,6 +170,33 @@
             font-size: 0.9rem;
             text-align: center;
         }
+        
+        .actions-bar {
+            margin: 10px 0 20px 0;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .btn-action {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-reset:hover {
+            background-color: #c0392b;
+        }
+        .btn-reset:active {
+            transform: scale(0.95);
+        }
 
         @media (max-width: 600px) {
             .scoreboard-container {
@@ -181,6 +208,9 @@
 <body>
     <h1>隊伍分數控制畫面</h1>
     <div class="subtitle">在這裡修改分數、隊名與圖片，顯示畫面會自動同步</div>
+    <div class="actions-bar">
+        <button class="btn-action btn-reset" onclick="resetAllScores()">🔄 清空所有分數</button>
+    </div>
 
     <div class="scoreboard-container">
         <div class="team-card" data-index="0">
@@ -360,15 +390,7 @@
             });
         });
 
-        document.querySelectorAll('.team-members-input').forEach((input, index) => {
-            input.addEventListener('input', function() {
-                state.teams[index].members = this.value;
-                saveData(state);
-            });
-        });
-
         renderEditor();
     </script>
 </body>
 </html>
-
