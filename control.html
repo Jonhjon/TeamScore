@@ -328,6 +328,19 @@
 
         function saveData(data) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showSaveIndicator();
+        }
+
+        let saveTimeout;
+        function showSaveIndicator() {
+            const indicator = document.getElementById('save-indicator');
+            if (indicator) {
+                indicator.style.opacity = '1';
+                if (saveTimeout) clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    indicator.style.opacity = '0';
+                }, 1000);
+            }
         }
 
         function resetAllScores() {
