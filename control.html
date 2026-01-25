@@ -283,22 +283,22 @@
                 {
                     name: '紅隊',                   
                     score: 0,
-                    image: 'https://placehold.co/150/FF5733/FFFFFF?text=A'
+                    image: 'https://placehold.co/150/FF5733/FFFFFF?text=1'
                 },
                 {
                     name: '藍隊',                   
                     score: 0,
-                    image: 'https://placehold.co/150/33C1FF/FFFFFF?text=B'
+                    image: 'https://placehold.co/150/33C1FF/FFFFFF?text=2'
                 },
                 {
                     name: '綠隊',                    
                     score: 0,
-                    image: 'https://placehold.co/150/27AE60/FFFFFF?text=C'
+                    image: 'https://placehold.co/150/27AE60/FFFFFF?text=3'
                 },
                 {
                     name: '黃隊',
                     score: 0,
-                    image: 'https://placehold.co/150/F1C40F/FFFFFF?text=D'
+                    image: 'https://placehold.co/150/F1C40F/FFFFFF?text=4'
                 }
             ]
         };
@@ -344,6 +344,14 @@
                 state.teams.forEach(team => {
                     team.score = 0;
                 });
+                saveData(state);
+                renderEditor();
+            }
+        }
+
+        function resetAllData() {
+            if (confirm('確定要重置所有設定（包含隊名、圖片與分數）嗎？此動作無法復原。')) {
+                state = JSON.parse(JSON.stringify(defaultData));
                 saveData(state);
                 renderEditor();
             }
