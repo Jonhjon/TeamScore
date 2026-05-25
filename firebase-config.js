@@ -4,13 +4,13 @@
 // Project Settings → 你的應用程式 → firebaseConfig
 // =====================================================
 const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAD2KQR1YmPx1psHT-oDA6pjRr_LZIyblI",
+  authDomain: "teamscore-e3094.firebaseapp.com",
+  databaseURL: "https://teamscore-e3094-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "teamscore-e3094",
+  storageBucket: "teamscore-e3094.firebasestorage.app",
+  messagingSenderId: "857885095419",
+  appId: "1:857885095419:web:5735d4a6bd21d56c56475e"
 };
 
 // =====================================================
