@@ -13,13 +13,17 @@
             --score-color: #e74c3c;
             --btn-plus: #27ae60;
             --btn-minus: #c0392b;
+            --log-width: 300px;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             padding: 20px;
+            padding-right: calc(var(--log-width) + 20px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -36,14 +40,15 @@
             color: #666;
             margin-bottom: 20px;
             font-size: 0.95rem;
+            text-align: center;
         }
 
         .scoreboard-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1000px;
         }
 
         .team-card {
@@ -55,21 +60,17 @@
             flex-direction: column;
             align-items: center;
             transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
-        .team-card:hover {
-            transform: translateY(-5px);
-        }
+        .team-card:hover { transform: translateY(-3px); }
 
         .team-image-container {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             overflow: hidden;
-            border: 5px solid #eee;
-            margin-bottom: 15px;
+            border: 4px solid #eee;
+            margin-bottom: 12px;
             position: relative;
             cursor: pointer;
         }
@@ -82,10 +83,7 @@
 
         .team-image-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0,0,0,0.5);
             color: white;
             display: flex;
@@ -93,322 +91,521 @@
             align-items: center;
             opacity: 0;
             transition: opacity 0.3s;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-align: center;
         }
 
-        .team-image-container:hover .team-image-overlay {
-            opacity: 1;
-        }
+        .team-image-container:hover .team-image-overlay { opacity: 1; }
 
         .team-name-input {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: var(--text-color);
-            margin: 10px 0;
+            margin: 8px 0;
             border: 1px solid #ccc;
             border-radius: 6px;
             padding: 4px 8px;
             text-align: center;
             width: 100%;
-            box-sizing: border-box;
         }
 
         .score-display {
             font-size: 3rem;
             font-weight: 800;
             color: var(--score-color);
-            margin: 10px 0;
+            margin: 6px 0;
         }
 
         .controls {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .score-delta-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 1rem;
         }
 
         .btn {
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             font-size: 1.2rem;
             color: white;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.2s;
         }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
+        .btn:active { transform: scale(0.93); }
 
-        .btn-plus {
-            background-color: var(--btn-plus);
-        }
-        .btn-plus:hover {
-            background-color: #219150;
-        }
+        .btn-plus  { background-color: var(--btn-plus); }
+        .btn-plus:hover  { background-color: #219150; }
+        .btn-minus { background-color: var(--btn-minus); }
+        .btn-minus:hover { background-color: #a93226; }
 
-        .btn-minus {
-            background-color: var(--btn-minus);
-        }
-        .btn-minus:hover {
-            background-color: #a93226;
-        }
+        .file-input { display: none; }
 
-        .file-input {
-            display: none;
-        }
-
-        .footer-note {
-            margin-top: 30px;
-            color: #666;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
         .actions-bar {
             margin: 10px 0 20px 0;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
+            flex-wrap: wrap;
         }
+
         .btn-action {
-            padding: 10px 20px;
+            padding: 9px 18px;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .btn-reset {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .btn-reset:hover {
-            background-color: #c0392b;
-        }
-        .btn-reset:active {
-            transform: scale(0.95);
+
+        .btn-reset-scores { background-color: #e67e22; color: white; }
+        .btn-reset-scores:hover { background-color: #ca6f1e; }
+        .btn-reset-all { background-color: #7f8c8d; color: white; }
+        .btn-reset-all:hover { background-color: #626567; }
+        .btn-action:active { transform: scale(0.95); }
+
+        /* Log sidebar */
+        #log-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: var(--log-width);
+            height: 100vh;
+            background: white;
+            box-shadow: -3px 0 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
         }
 
-        @media (max-width: 600px) {
-            .scoreboard-container {
-                grid-template-columns: 1fr;
-            }
+        #log-header {
+            padding: 16px 14px 10px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        #log-entries {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 10px;
+        }
+
+        .log-entry {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.78rem;
+            display: grid;
+            grid-template-columns: 52px 1fr;
+            gap: 4px;
+        }
+
+        .log-time {
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .log-body { color: #333; }
+
+        .log-delta-pos { color: #27ae60; font-weight: bold; }
+        .log-delta-neg { color: #e74c3c; font-weight: bold; }
+
+        /* Login overlay */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px 36px;
+            border-radius: 14px;
+            text-align: center;
+            width: 320px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .login-box h2 {
+            margin: 0 0 20px;
+            color: var(--primary-color);
+        }
+
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        #login-error {
+            color: #e74c3c;
+            min-height: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 11px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-box button:hover { background: #1a252f; }
+
+        #conn-dot {
+            position: fixed;
+            top: 14px;
+            left: 16px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e74c3c;
+            transition: background 0.5s;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-right: 20px; }
+            #log-panel { display: none; }
         }
     </style>
 </head>
 <body>
-    <h1>隊伍分數控制畫面</h1>
-    <div class="subtitle">在這裡修改分數、隊名與圖片，顯示畫面會自動同步</div>
+
+    <!-- Login overlay -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>🔐 管理員登入</h2>
+            <input type="password" id="admin-pw-input" placeholder="請輸入管理員密碼"
+                   onkeydown="if(event.key==='Enter') submitLogin()">
+            <p id="login-error"></p>
+            <button onclick="submitLogin()">登入</button>
+        </div>
+    </div>
+
+    <!-- Connection indicator -->
+    <div id="conn-dot"></div>
+
+    <h1>⚙️ 隊伍分數控制畫面</h1>
+    <div class="subtitle">修改分數、隊名與圖片，所有畫面即時同步</div>
+
     <div class="actions-bar">
-        <button class="btn-action btn-reset" onclick="resetAllScores()">🔄 清空所有分數</button>
-        <button class="btn-action btn-reset" style="background-color: #7f8c8d;" onclick="resetAllData()">⚠️ 重置所有設定</button>
+        <button class="btn-action btn-reset-scores" onclick="resetAllScores()">🔄 清空所有分數</button>
+        <button class="btn-action btn-reset-all"    onclick="resetAllData()">⚠️ 重置所有設定</button>
     </div>
 
     <div class="scoreboard-container">
+        <!-- Team 0 -->
         <div class="team-card" data-index="0">
             <div class="team-image-container" onclick="triggerFileUpload(0)">
-                <img src="" alt="Team A" class="team-image" id="edit-img-0">
+                <img src="" alt="Team 1" class="team-image" id="edit-img-0">
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
-            <input type="file" class="file-input" id="file-0" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-0" placeholder="隊伍名稱">
+            <input type="file" class="file-input" id="file-0" accept="image/*" onchange="handleFileChange(0, this)">
+            <input type="text" class="team-name-input" id="edit-name-0" placeholder="隊伍名稱"
+                   oninput="onNameInput(0, this.value)">
             <div class="score-display" id="edit-score-0">0</div>
             <div class="controls">
-                <button class="btn btn-minus" onclick="changeScore(0, -10)">-</button>
-                <button class="btn btn-plus" onclick="changeScore(0, 10)">+</button>
+                <button class="btn btn-minus" onclick="changeScore(0, -1)">−</button>
+                <input type="number" class="score-delta-input" id="score-delta-0" value="10" min="1" max="9999">
+                <button class="btn btn-plus"  onclick="changeScore(0,  1)">＋</button>
             </div>
         </div>
 
+        <!-- Team 1 -->
         <div class="team-card" data-index="1">
             <div class="team-image-container" onclick="triggerFileUpload(1)">
-                <img src="" alt="Team B" class="team-image" id="edit-img-1">
+                <img src="" alt="Team 2" class="team-image" id="edit-img-1">
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
-            <input type="file" class="file-input" id="file-1" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-1" placeholder="隊伍名稱">
+            <input type="file" class="file-input" id="file-1" accept="image/*" onchange="handleFileChange(1, this)">
+            <input type="text" class="team-name-input" id="edit-name-1" placeholder="隊伍名稱"
+                   oninput="onNameInput(1, this.value)">
             <div class="score-display" id="edit-score-1">0</div>
             <div class="controls">
-                <button class="btn btn-minus" onclick="changeScore(1, -10)">-</button>
-                <button class="btn btn-plus" onclick="changeScore(1, 10)">+</button>
+                <button class="btn btn-minus" onclick="changeScore(1, -1)">−</button>
+                <input type="number" class="score-delta-input" id="score-delta-1" value="10" min="1" max="9999">
+                <button class="btn btn-plus"  onclick="changeScore(1,  1)">＋</button>
             </div>
         </div>
 
+        <!-- Team 2 -->
         <div class="team-card" data-index="2">
             <div class="team-image-container" onclick="triggerFileUpload(2)">
-                <img src="" alt="Team C" class="team-image" id="edit-img-2">
+                <img src="" alt="Team 3" class="team-image" id="edit-img-2">
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
-            <input type="file" class="file-input" id="file-2" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-2">
+            <input type="file" class="file-input" id="file-2" accept="image/*" onchange="handleFileChange(2, this)">
+            <input type="text" class="team-name-input" id="edit-name-2" placeholder="隊伍名稱"
+                   oninput="onNameInput(2, this.value)">
             <div class="score-display" id="edit-score-2">0</div>
             <div class="controls">
-                <button class="btn btn-minus" onclick="changeScore(2, -10)">-</button>
-                <button class="btn btn-plus" onclick="changeScore(2, 10)">+</button>
+                <button class="btn btn-minus" onclick="changeScore(2, -1)">−</button>
+                <input type="number" class="score-delta-input" id="score-delta-2" value="10" min="1" max="9999">
+                <button class="btn btn-plus"  onclick="changeScore(2,  1)">＋</button>
             </div>
         </div>
 
+        <!-- Team 3 -->
         <div class="team-card" data-index="3">
             <div class="team-image-container" onclick="triggerFileUpload(3)">
-                <img src="" alt="Team D" class="team-image" id="edit-img-3">
+                <img src="" alt="Team 4" class="team-image" id="edit-img-3">
                 <div class="team-image-overlay">點擊更換圖片</div>
             </div>
-            <input type="file" class="file-input" id="file-3" accept="image/*">
-            <input type="text" class="team-name-input" id="edit-name-3" placeholder="隊伍名稱">
+            <input type="file" class="file-input" id="file-3" accept="image/*" onchange="handleFileChange(3, this)">
+            <input type="text" class="team-name-input" id="edit-name-3" placeholder="隊伍名稱"
+                   oninput="onNameInput(3, this.value)">
             <div class="score-display" id="edit-score-3">0</div>
             <div class="controls">
-                <button class="btn btn-minus" onclick="changeScore(3, -10)">-</button>
-                <button class="btn btn-plus" onclick="changeScore(3, 10)">+</button>
+                <button class="btn btn-minus" onclick="changeScore(3, -1)">−</button>
+                <input type="number" class="score-delta-input" id="score-delta-3" value="10" min="1" max="9999">
+                <button class="btn btn-plus"  onclick="changeScore(3,  1)">＋</button>
             </div>
         </div>
     </div>
 
-    <div class="footer-note">
-        建議同時在另一個視窗開啟 index.html 作為「顯示畫面」<br>
-        兩個畫面會透過瀏覽器的本地儲存自動同步資料
+    <!-- Log sidebar -->
+    <div id="log-panel">
+        <div id="log-header">📋 操作記錄</div>
+        <div id="log-entries"><p style="color:#aaa;text-align:center;padding:20px;font-size:0.85rem;">尚無記錄</p></div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script>
-        const STORAGE_KEY = 'scoreboardDataV1';
-
-        const defaultData = {
-            teams: [
-                {
-                    name: '紅隊',                   
-                    score: 0,
-                    image: 'https://placehold.co/150/FF5733/FFFFFF?text=1'
-                },
-                {
-                    name: '藍隊',                   
-                    score: 0,
-                    image: 'https://placehold.co/150/33C1FF/FFFFFF?text=2'
-                },
-                {
-                    name: '綠隊',                    
-                    score: 0,
-                    image: 'https://placehold.co/150/27AE60/FFFFFF?text=3'
-                },
-                {
-                    name: '黃隊',
-                    score: 0,
-                    image: 'https://placehold.co/150/F1C40F/FFFFFF?text=4'
-                }
-            ]
-        };
-
-        function loadData() {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                return defaultData;
-            }
-            try {
-                const parsed = JSON.parse(raw);
-                if (!parsed.teams || parsed.teams.length !== 4) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                    return defaultData;
-                }
-                return parsed;
-            } catch (e) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                return defaultData;
+        // ── Auth ──────────────────────────────────────────────
+        function checkAuth() {
+            if (sessionStorage.getItem('adminAuth') === 'true') {
+                document.getElementById('login-overlay').style.display = 'none';
+                initApp();
             }
         }
 
-        function saveData(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            showSaveIndicator();
-        }
-
-        let saveTimeout;
-        function showSaveIndicator() {
-            const indicator = document.getElementById('save-indicator');
-            if (indicator) {
-                indicator.style.opacity = '1';
-                if (saveTimeout) clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(() => {
-                    indicator.style.opacity = '0';
-                }, 1000);
+        function submitLogin() {
+            const pw = document.getElementById('admin-pw-input').value;
+            if (pw === PASSWORDS.admin) {
+                sessionStorage.setItem('adminAuth', 'true');
+                document.getElementById('login-overlay').style.display = 'none';
+                initApp();
+            } else {
+                document.getElementById('login-error').textContent = '密碼錯誤，請再試一次';
+                document.getElementById('admin-pw-input').value = '';
             }
         }
 
-        function resetAllScores() {
-            if (confirm('確定要將所有隊伍的分數歸零嗎？')) {
-                state.teams.forEach(team => {
-                    team.score = 0;
+        // ── Firebase ──────────────────────────────────────────
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const db = firebase.database();
+        const storage = firebase.storage();
+
+        async function seedIfEmpty() {
+            const snap = await db.ref('teams').once('value');
+            if (!snap.val()) {
+                const updates = {};
+                DEFAULT_TEAMS.forEach((t, i) => { updates[i] = { ...t }; });
+                await db.ref('teams').set(updates);
+            }
+        }
+
+        function initApp() {
+            seedIfEmpty();
+
+            db.ref('teams').on('value', (snap) => {
+                const obj = snap.val();
+                if (!obj) return;
+                Object.keys(obj).forEach(i => renderTeamCard(Number(i), obj[i]));
+            });
+
+            db.ref('logs').limitToLast(80).on('value', renderLogs);
+
+            db.ref('.info/connected').on('value', (snap) => {
+                document.getElementById('conn-dot').style.background = snap.val() ? '#27ae60' : '#e74c3c';
+            });
+        }
+
+        function renderTeamCard(i, team) {
+            const img   = document.getElementById('edit-img-'   + i);
+            const name  = document.getElementById('edit-name-'  + i);
+            const score = document.getElementById('edit-score-' + i);
+            if (img   && img.src   !== team.imageUrl) img.src   = team.imageUrl || '';
+            if (name  && document.activeElement !== name)  name.value   = team.name   || '';
+            if (score) score.textContent = team.score ?? 0;
+        }
+
+        // ── Score ─────────────────────────────────────────────
+        function changeScore(teamIndex, direction) {
+            const deltaInput = document.getElementById('score-delta-' + teamIndex);
+            const delta = (parseInt(deltaInput.value) || 10) * direction;
+            db.ref('teams/' + teamIndex + '/score').transaction((current) => {
+                const next = (current || 0) + delta;
+                return next < 0 ? 0 : next;
+            }).then((result) => {
+                if (!result.committed) return;
+                const teamName = document.getElementById('edit-name-' + teamIndex).value;
+                logAction({ actor: 'admin', actionType: 'score_change', teamIndex, teamName, delta });
+            });
+        }
+
+        // ── Name ─────────────────────────────────────────────
+        const nameDebounce = {};
+        function onNameInput(teamIndex, value) {
+            clearTimeout(nameDebounce[teamIndex]);
+            nameDebounce[teamIndex] = setTimeout(() => {
+                if (!value.trim()) return;
+                db.ref('teams/' + teamIndex + '/name').set(value.trim()).then(() => {
+                    logAction({ actor: 'admin', actionType: 'name_edit', teamIndex, teamName: value.trim(), delta: null });
                 });
-                saveData(state);
-                renderEditor();
-            }
+            }, 700);
+        }
+
+        // ── Image ─────────────────────────────────────────────
+        function triggerFileUpload(i) {
+            document.getElementById('file-' + i).click();
+        }
+
+        function handleFileChange(teamIndex, fileInput) {
+            if (!fileInput.files || !fileInput.files[0]) return;
+            compressImage(fileInput.files[0], 300, 0.8).then(blob => {
+                const ref = storage.ref('team-images/team-' + teamIndex + '-' + Date.now() + '.jpg');
+                return ref.put(blob).then(snap => snap.ref.getDownloadURL());
+            }).then(url => {
+                return db.ref('teams/' + teamIndex + '/imageUrl').set(url);
+            }).then(() => {
+                const teamName = document.getElementById('edit-name-' + teamIndex).value;
+                logAction({ actor: 'admin', actionType: 'image_change', teamIndex, teamName, delta: null });
+            }).catch(err => {
+                alert('圖片上傳失敗：' + err.message);
+            });
+            fileInput.value = '';
+        }
+
+        function compressImage(file, maxSize, quality) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width, h = img.height;
+                        if (w > maxSize || h > maxSize) {
+                            if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                            else       { w = Math.round(w * maxSize / h); h = maxSize; }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        canvas.toBlob(resolve, 'image/jpeg', quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ── Reset ─────────────────────────────────────────────
+        function resetAllScores() {
+            if (!confirm('確定要將所有隊伍的分數歸零嗎？')) return;
+            const updates = { '0/score': 0, '1/score': 0, '2/score': 0, '3/score': 0 };
+            db.ref('teams').update(updates).then(() => {
+                logAction({ actor: 'admin', actionType: 'reset_scores', teamIndex: -1, teamName: '全部', delta: null });
+            });
         }
 
         function resetAllData() {
-            if (confirm('確定要重置所有設定（包含隊名、圖片與分數）嗎？此動作無法復原。')) {
-                state = JSON.parse(JSON.stringify(defaultData));
-                saveData(state);
-                renderEditor();
+            if (!confirm('確定要重置所有設定（包含隊名、圖片與分數）嗎？此動作無法復原。')) return;
+            const updates = {};
+            DEFAULT_TEAMS.forEach((t, i) => { updates[i] = { ...t }; });
+            db.ref('teams').set(updates).then(() => {
+                logAction({ actor: 'admin', actionType: 'reset_all', teamIndex: -1, teamName: '全部', delta: null });
+            });
+        }
+
+        // ── Log ──────────────────────────────────────────────
+        function logAction(entry) {
+            db.ref('logs').push({
+                ...entry,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        const ACTION_LABELS = {
+            score_change: '分數',
+            name_edit:    '改名',
+            image_change: '換圖',
+            reset_scores: '清空分數',
+            reset_all:    '重置全部'
+        };
+
+        const ACTOR_LABELS = {
+            admin: '總控',
+            team0: '隊0對輔',
+            team1: '隊1對輔',
+            team2: '隊2對輔',
+            team3: '隊3對輔'
+        };
+
+        function renderLogs(snapshot) {
+            const panel = document.getElementById('log-entries');
+            const logs = [];
+            snapshot.forEach(child => logs.push(child.val()));
+            logs.reverse();
+
+            if (logs.length === 0) {
+                panel.innerHTML = '<p style="color:#aaa;text-align:center;padding:20px;font-size:0.85rem;">尚無記錄</p>';
+                return;
             }
+
+            panel.innerHTML = logs.map(log => {
+                const time  = new Date(log.timestamp).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const actor = ACTOR_LABELS[log.actor] || log.actor;
+                const action = ACTION_LABELS[log.actionType] || log.actionType;
+                let deltaHtml = '';
+                if (log.delta != null) {
+                    const cls = log.delta > 0 ? 'log-delta-pos' : 'log-delta-neg';
+                    const sign = log.delta > 0 ? '+' : '';
+                    deltaHtml = ` <span class="${cls}">${sign}${log.delta}</span>`;
+                }
+                return `<div class="log-entry">
+                    <span class="log-time">${time}</span>
+                    <span class="log-body">${actor}｜${log.teamName}｜${action}${deltaHtml}</span>
+                </div>`;
+            }).join('');
         }
 
-        let state = loadData();
-
-        function renderEditor() {
-            state.teams.forEach((team, index) => {
-                const img = document.getElementById('edit-img-' + index);
-                const nameInput = document.getElementById('edit-name-' + index);
-                const scoreDisplay = document.getElementById('edit-score-' + index);
-                if (img) img.src = team.image;
-                if (nameInput) nameInput.value = team.name;
-                if (scoreDisplay) scoreDisplay.textContent = team.score;
-            });
-        }
-
-        function changeScore(index, delta) {
-            const team = state.teams[index];
-            const next = team.score + delta;
-            team.score = next < 0 ? 0 : next;
-            saveData(state);
-            renderEditor();
-        }
-
-        function triggerFileUpload(index) {
-            const input = document.getElementById('file-' + index);
-            if (input) input.click();
-        }
-
-        function handleFileChange(index, fileInput) {
-            if (!fileInput.files || !fileInput.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                state.teams[index].image = e.target.result;
-                saveData(state);
-                renderEditor();
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        }
-
-        document.querySelectorAll('.file-input').forEach((input, index) => {
-            input.addEventListener('change', function() {
-                handleFileChange(index, this);
-            });
-        });
-
-        document.querySelectorAll('.team-name-input').forEach((input, index) => {
-            input.addEventListener('input', function() {
-                state.teams[index].name = this.value || defaultData.teams[index].name;
-                saveData(state);
-            });
-        });
-
-        renderEditor();
+        // ── Init ─────────────────────────────────────────────
+        checkAuth();
     </script>
 </body>
 </html>
