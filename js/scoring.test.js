@@ -56,7 +56,7 @@ describe('changeScoreAndLog', () => {
         mockDb = {
             ref: jest.fn().mockImplementation((path) => {
                 if (path.endsWith('/score')) return { transaction: mockTransaction };
-                if (path === 'logs') return { push: mockPush };
+                if (path === 'teams/_logs') return { push: mockPush };
                 return {};
             }),
         };
@@ -75,6 +75,13 @@ describe('changeScoreAndLog', () => {
         );
     });
 
+    test('log 寫入路徑為 teams/_logs 而非舊的 logs', async () => {
+        await changeScoreAndLog(mockDb, 0, 10, '紅隊', 'admin');
+        const paths = mockDb.ref.mock.calls.map(([p]) => p);
+        expect(paths).toContain('teams/_logs');
+        expect(paths).not.toContain('logs');
+    });
+
     test('transaction 未 commit 時不寫入 log', async () => {
         mockTransaction.mockResolvedValue({ committed: false });
         const result = await changeScoreAndLog(mockDb, 0, 10, '紅隊', 'team0');
@@ -83,11 +90,10 @@ describe('changeScoreAndLog', () => {
     });
 
     test('teamName 由呼叫者提供，不需額外網路請求', async () => {
-        // 驗證：整個流程中 db.ref 只被呼叫兩次（score + logs），不會有第三次呼叫去讀隊名
         await changeScoreAndLog(mockDb, 1, 20, '藍隊', 'team1');
         const paths = mockDb.ref.mock.calls.map(([p]) => p);
-        expect(paths).toEqual(['teams/1/score', 'logs']);
-        expect(paths.length).toBe(2); // 絕對沒有第三次呼叫
+        expect(paths).toEqual(['teams/1/score', 'teams/_logs']);
+        expect(paths.length).toBe(2);
     });
 
     test('transaction 拋出錯誤時，Promise reject 並向上傳遞', async () => {
