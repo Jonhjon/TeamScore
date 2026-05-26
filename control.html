@@ -471,7 +471,7 @@
                 Object.keys(obj).forEach(i => renderTeamCard(Number(i), obj[i]));
             });
 
-            db.ref('logs').limitToLast(80).on('value', renderLogs);
+            db.ref('teams/_logs').limitToLast(80).on('value', renderLogs);
 
             db.ref('.info/connected').on('value', (snap) => {
                 document.getElementById('conn-dot').style.background = snap.val() ? '#27ae60' : '#e74c3c';
@@ -574,7 +574,7 @@
 
         // ── Log ──────────────────────────────────────────────
         function logAction(entry) {
-            db.ref('logs').push({
+            db.ref('teams/_logs').push({
                 ...entry,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
