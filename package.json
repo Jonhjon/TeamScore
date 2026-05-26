@@ -1,0 +1,19 @@
+{
+  "name": "teamscore",
+  "version": "1.0.0",
+  "description": "專為營隊活動設計的即時線上計分系統。支援多裝置透過網際網路同時連線，總控、對輔、觀眾各用不同畫面，分數異動即時同步。",
+  "main": "firebase-config.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:36869/git/Jonhjon/TeamScore"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.4.2"
+  }
+}

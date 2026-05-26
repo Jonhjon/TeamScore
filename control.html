@@ -404,6 +404,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="js/scoring.js"></script>
     <script>
         // ── Auth ──────────────────────────────────────────────
         function checkAuth() {
@@ -465,16 +466,10 @@
 
         // ── Score ─────────────────────────────────────────────
         function changeScore(teamIndex, direction) {
-            const deltaInput = document.getElementById('score-delta-' + teamIndex);
-            const delta = (parseInt(deltaInput.value) || 10) * direction;
-            db.ref('teams/' + teamIndex + '/score').transaction((current) => {
-                const next = (current || 0) + delta;
-                return next < 0 ? 0 : next;
-            }).then((result) => {
-                if (!result.committed) return;
-                const teamName = document.getElementById('edit-name-' + teamIndex).value;
-                logAction({ actor: 'admin', actionType: 'score_change', teamIndex, teamName, delta });
-            });
+            const delta = (parseInt(document.getElementById('score-delta-' + teamIndex).value) || 10) * direction;
+            const teamName = document.getElementById('edit-name-' + teamIndex).value;
+            changeScoreAndLog(db, teamIndex, delta, teamName, 'admin', firebase.database.ServerValue.TIMESTAMP)
+                .catch(err => console.error('changeScore failed:', err));
         }
 
         // ── Name ─────────────────────────────────────────────
