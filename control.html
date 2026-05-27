@@ -452,6 +452,7 @@
         // ── Firebase ──────────────────────────────────────────
         firebase.initializeApp(FIREBASE_CONFIG);
         const db = firebase.database();
+        const logBuffer = [];
 
         async function seedIfEmpty() {
             const snap = await db.ref('teams').once('value');
@@ -471,7 +472,6 @@
                 Object.keys(obj).forEach(i => renderTeamCard(Number(i), obj[i]));
             });
 
-            const logBuffer = [];
             db.ref('teams/_logs').limitToLast(80).on('child_added', (snap) => {
                 logBuffer.push(snap.val());
                 if (logBuffer.length > 80) logBuffer.shift();
@@ -569,11 +569,13 @@
         }
 
         function resetAllData() {
-            if (!confirm('確定要重置所有設定（包含隊名、圖片與分數）嗎？此動作無法復原。')) return;
+            if (!confirm('確定要重置所有設定（包含隊名、圖片、分數與操作紀錄）嗎？此動作無法復原。')) return;
             const updates = {};
             DEFAULT_TEAMS.forEach((t, i) => { updates[i] = { ...t }; });
-            db.ref('teams').set(updates).then(() => {
-                logAction({ actor: 'admin', actionType: 'reset_all', teamIndex: -1, teamName: '全部', delta: null });
+            db.ref('teams').set(updates);
+            db.ref('teams/_logs').remove().then(() => {
+                logBuffer.length = 0;
+                renderLogs([]);
             });
         }
 
