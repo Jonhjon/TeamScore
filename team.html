@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>對輔加分畫面</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --primary: #2c3e50;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+
+        .page { display: none; width: 100%; max-width: 400px; }
+        .page.active { display: flex; flex-direction: column; align-items: center; }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 24px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        /* ── Team select ── */
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .team-select-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 22px 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .team-select-btn:hover  { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .team-select-btn:active { transform: scale(0.96); }
+
+        /* ── Score panel ── */
+        .score-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px 24px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        #panel-team-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #eee;
+            margin-bottom: 12px;
+        }
+
+        #panel-team-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        #panel-score {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: #e74c3c;
+            margin: 8px 0 20px;
+            line-height: 1;
+        }
+
+        .delta-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .delta-row label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        #team-score-input {
+            width: 80px;
+            text-align: center;
+            font-size: 1.3rem;
+            padding: 6px 8px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #team-score-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .score-btns {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        .score-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        .score-btn:active { transform: scale(0.95); }
+
+        .btn-add  { background: #27ae60; color: white; }
+        .btn-add:hover  { background: #1e8449; }
+        .btn-sub  { background: #c0392b; color: white; }
+        .btn-sub:hover  { background: #a93226; }
+
+        .panel-note {
+            margin-top: 18px;
+            color: #aaa;
+            font-size: 0.82rem;
+        }
+
+        #feedback-msg {
+            min-height: 28px;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #27ae60;
+            text-align: center;
+            transition: opacity 0.5s;
+        }
+
+        .btn-logout {
+            margin-top: 16px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #conn-dot {
+            position: fixed;
+            top: 12px;
+            right: 14px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #e74c3c;
+            transition: background 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div id="conn-dot"></div>
+
+    <!-- Step 1: Team selection -->
+    <div class="page active" id="page-select">
+        <h2>🏆 選擇你的隊伍</h2>
+        <div class="team-grid" id="team-grid"></div>
+    </div>
+
+    <!-- Step 2: Score panel -->
+    <div class="page" id="page-score">
+        <div class="score-card">
+            <img id="panel-team-img" src="" alt="team">
+            <div id="panel-team-name"></div>
+            <div id="panel-score">0</div>
+
+            <div class="delta-row">
+                <label>加/減分數：</label>
+                <input type="number" id="team-score-input" value="10" min="1" max="9999">
+                <label>分</label>
+            </div>
+
+            <div class="score-btns">
+                <button class="score-btn btn-add" onclick="teamChangeScore(1)">＋ 加分</button>
+                <button class="score-btn btn-sub" onclick="teamChangeScore(-1)">− 扣分</button>
+            </div>
+
+            <div id="feedback-msg"></div>
+            <p class="panel-note">只能修改本隊分數</p>
+            <button class="btn-logout" onclick="logout()">登出</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/scoring.js"></script>
+    <script>
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const db = firebase.database();
+
+        let selectedTeamIndex = null;
+        let teamsListener = null;
+
+        // ── Connection dot ────────────────────────────────────
+        db.ref('.info/connected').on('value', (snap) => {
+            document.getElementById('conn-dot').style.background = snap.val() ? '#27ae60' : '#e74c3c';
+        });
+
+        // ── Build team selection grid ─────────────────────────
+        function buildTeamGrid() {
+            const grid = document.getElementById('team-grid');
+            grid.innerHTML = '';
+            DEFAULT_TEAMS.forEach((team, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'team-select-btn';
+                btn.style.background = TEAM_COLORS[i];
+                btn.style.color = TEAM_TEXT_COLORS[i];
+                btn.onclick = () => selectTeam(i);
+
+                // Try to load live team name from DB
+                db.ref('teams/' + i + '/name').once('value').then(snap => {
+                    btn.textContent = snap.val() || team.name;
+                }).catch(() => { btn.textContent = team.name; });
+
+                btn.textContent = team.name;
+                grid.appendChild(btn);
+            });
+        }
+
+        // ── Step 1: Select team ───────────────────────────────
+        function selectTeam(index) {
+            selectedTeamIndex = index;
+            showScorePanel();
+        }
+
+        // ── Step 2: Score panel ───────────────────────────────
+        function showScorePanel() {
+            showPage('page-score');
+            if (teamsListener) teamsListener();
+            teamsListener = db.ref('teams/' + selectedTeamIndex).on('value', (snap) => {
+                const team = snap.val();
+                if (!team) return;
+                document.getElementById('panel-team-name').textContent = team.name;
+                document.getElementById('panel-team-img').src  = team.imageUrl || '';
+                document.getElementById('panel-score').textContent = team.score ?? 0;
+            });
+        }
+
+        function teamChangeScore(direction) {
+            const delta = (parseInt(document.getElementById('team-score-input').value) || 10) * direction;
+            const teamName = document.getElementById('panel-team-name').textContent;
+            changeScoreAndLog(db, selectedTeamIndex, delta, teamName, 'team' + selectedTeamIndex, firebase.database.ServerValue.TIMESTAMP)
+                .then((result) => {
+                    if (!result) return;
+                    showFeedback(delta > 0 ? `已加 ${delta} 分！` : `已扣 ${Math.abs(delta)} 分`);
+                })
+                .catch(() => {
+                    showFeedback('操作失敗，請重試');
+                });
+        }
+
+        let feedbackTimer;
+        function showFeedback(msg) {
+            const el = document.getElementById('feedback-msg');
+            el.textContent = msg;
+            el.style.opacity = '1';
+            clearTimeout(feedbackTimer);
+            feedbackTimer = setTimeout(() => { el.style.opacity = '0'; }, 2000);
+        }
+
+        function logout() {
+            if (teamsListener) {
+                db.ref('teams/' + selectedTeamIndex).off('value', teamsListener);
+                teamsListener = null;
+            }
+            selectedTeamIndex = null;
+            showPage('page-select');
+        }
+
+        // ── Page helper ───────────────────────────────────────
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        buildTeamGrid();
+    </script>
+</body>
+</html>

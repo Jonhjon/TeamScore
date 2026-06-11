@@ -1,0 +1,26 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      ".git/**",
+      "database.rules.json",
+      "storage.rules",
+      "*.png",
+      "*.md"
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      }
+    ]
+  },
+  "database": [{
+    "rules": "database.rules.json",
+    "instance": "teamscore-e3094-default-rtdb"
+  }]
+}
