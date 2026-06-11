@@ -56,56 +56,6 @@
         .team-select-btn:hover  { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
         .team-select-btn:active { transform: scale(0.96); }
 
-        /* ── Password ── */
-        .pw-card {
-            background: var(--card);
-            border-radius: 14px;
-            padding: 32px 28px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-        }
-
-        .pw-card input[type="password"] {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-
-        #pw-error {
-            color: #e74c3c;
-            min-height: 22px;
-            font-size: 0.88rem;
-            margin: 4px 0 10px;
-        }
-
-        .btn-confirm {
-            width: 100%;
-            padding: 11px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        .btn-confirm:hover { background: #1a252f; }
-
-        .btn-back {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
         /* ── Score panel ── */
         .score-card {
             background: var(--card);
@@ -238,19 +188,7 @@
         <div class="team-grid" id="team-grid"></div>
     </div>
 
-    <!-- Step 2: Password -->
-    <div class="page" id="page-pw">
-        <div class="pw-card">
-            <h2 id="pw-title">輸入隊伍密碼</h2>
-            <input type="password" id="team-pw-input" placeholder="隊伍密碼"
-                   onkeydown="if(event.key==='Enter') submitTeamPw()">
-            <p id="pw-error"></p>
-            <button class="btn-confirm" onclick="submitTeamPw()">確認</button>
-            <button class="btn-back" onclick="goBack()">← 重新選擇隊伍</button>
-        </div>
-    </div>
-
-    <!-- Step 3: Score panel -->
+    <!-- Step 2: Score panel -->
     <div class="page" id="page-score">
         <div class="score-card">
             <img id="panel-team-img" src="" alt="team">
@@ -314,38 +252,10 @@
         // ── Step 1: Select team ───────────────────────────────
         function selectTeam(index) {
             selectedTeamIndex = index;
-            if (sessionStorage.getItem('teamAuth_' + index) === 'true') {
-                showScorePanel();
-            } else {
-                db.ref('teams/' + index + '/name').once('value').then(snap => {
-                    document.getElementById('pw-title').textContent =
-                        (snap.val() || DEFAULT_TEAMS[index].name) + '｜輸入隊伍密碼';
-                });
-                showPage('page-pw');
-                document.getElementById('team-pw-input').value = '';
-                document.getElementById('pw-error').textContent = '';
-                document.getElementById('team-pw-input').focus();
-            }
+            showScorePanel();
         }
 
-        // ── Step 2: Password ──────────────────────────────────
-        function submitTeamPw() {
-            const pw = document.getElementById('team-pw-input').value;
-            if (pw === PASSWORDS.teams[selectedTeamIndex]) {
-                sessionStorage.setItem('teamAuth_' + selectedTeamIndex, 'true');
-                showScorePanel();
-            } else {
-                document.getElementById('pw-error').textContent = '密碼錯誤，請再試一次';
-                document.getElementById('team-pw-input').value = '';
-            }
-        }
-
-        function goBack() {
-            selectedTeamIndex = null;
-            showPage('page-select');
-        }
-
-        // ── Step 3: Score panel ───────────────────────────────
+        // ── Step 2: Score panel ───────────────────────────────
         function showScorePanel() {
             showPage('page-score');
             if (teamsListener) teamsListener();
@@ -381,9 +291,6 @@
         }
 
         function logout() {
-            if (selectedTeamIndex !== null) {
-                sessionStorage.removeItem('teamAuth_' + selectedTeamIndex);
-            }
             if (teamsListener) {
                 db.ref('teams/' + selectedTeamIndex).off('value', teamsListener);
                 teamsListener = null;
@@ -398,20 +305,7 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // ── Check existing session on load ───────────────────
-        function init() {
-            buildTeamGrid();
-            // If only one team is authenticated, go straight to that team's panel
-            for (let i = 0; i < DEFAULT_TEAMS.length; i++) {
-                if (sessionStorage.getItem('teamAuth_' + i) === 'true') {
-                    selectedTeamIndex = i;
-                    showScorePanel();
-                    return;
-                }
-            }
-        }
-
-        init();
+        buildTeamGrid();
     </script>
 </body>
 </html>
