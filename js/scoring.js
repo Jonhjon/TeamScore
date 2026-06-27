@@ -32,7 +32,7 @@ async function changeScoreAndLog(db, teamIndex, delta, teamName, actor, serverTi
         timestamp: serverTimestamp !== undefined ? serverTimestamp : { '.sv': 'timestamp' }
     });
 
-    await db.ref('logs').push(logEntry);
+    await db.ref('teams/_logs').push(logEntry);
     return result;
 }
 
