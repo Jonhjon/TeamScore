@@ -579,7 +579,7 @@
         // ── Reset ─────────────────────────────────────────────
         function resetAllScores() {
             if (!confirm('確定要將所有隊伍的分數歸零嗎？')) return;
-            const updates = { '0/score': 0, '1/score': 0, '2/score': 0, '3/score': 0 };
+            const updates = { '0/score': 0, '1/score': 0, '2/score': 0, '3/score': 0, '4/score': 0 };
             db.ref('teams').update(updates).then(() => {
                 logAction({ actor: 'admin', actionType: 'reset_scores', teamIndex: -1, teamName: '全部', delta: null });
             });
