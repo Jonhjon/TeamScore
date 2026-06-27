@@ -277,6 +277,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="js/scoring.js"></script>
     <script>
         firebase.initializeApp(FIREBASE_CONFIG);
         const db = firebase.database();
@@ -359,23 +360,15 @@
 
         function teamChangeScore(direction) {
             const delta = (parseInt(document.getElementById('team-score-input').value) || 10) * direction;
-            db.ref('teams/' + selectedTeamIndex + '/score').transaction((current) => {
-                const next = (current || 0) + delta;
-                return next < 0 ? 0 : next;
-            }).then((result) => {
-                if (!result.committed) return;
-                db.ref('teams/' + selectedTeamIndex + '/name').once('value').then(snap => {
-                    db.ref('logs').push({
-                        actor: 'team' + selectedTeamIndex,
-                        actionType: 'score_change',
-                        teamIndex: selectedTeamIndex,
-                        teamName: snap.val() || DEFAULT_TEAMS[selectedTeamIndex].name,
-                        delta,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
+            const teamName = document.getElementById('panel-team-name').textContent;
+            changeScoreAndLog(db, selectedTeamIndex, delta, teamName, 'team' + selectedTeamIndex, firebase.database.ServerValue.TIMESTAMP)
+                .then((result) => {
+                    if (!result) return;
+                    showFeedback(delta > 0 ? `已加 ${delta} 分！` : `已扣 ${Math.abs(delta)} 分`);
+                })
+                .catch(() => {
+                    showFeedback('操作失敗，請重試');
                 });
-                showFeedback(delta > 0 ? `已加 ${delta} 分！` : `已扣 ${Math.abs(delta)} 分`);
-            });
         }
 
         let feedbackTimer;
