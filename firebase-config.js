@@ -17,12 +17,12 @@ const FIREBASE_CONFIG = {
 // 活動前請修改以下密碼
 // =====================================================
 const PASSWORDS = {
-  admin: "admin2024",
+  admin: "admin2026",
   teams: [
-    "red2024",
-    "blue2024",
-    "green2024",
-    "yellow2024"
+    "red2026",
+    "blue2026",
+    "green2026",
+    "yellow2026"
   ]
 };
 
