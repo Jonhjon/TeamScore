@@ -416,6 +416,23 @@
                 <button class="btn btn-plus"  onclick="changeScore(3,  1)">＋</button>
             </div>
         </div>
+
+        <!-- Team 4 -->
+        <div class="team-card" data-index="4">
+            <div class="team-image-container" onclick="triggerFileUpload(4)">
+                <img src="" alt="Team 5" class="team-image" id="edit-img-4">
+                <div class="team-image-overlay">點擊更換圖片</div>
+            </div>
+            <input type="file" class="file-input" id="file-4" accept="image/*" onchange="handleFileChange(4, this)">
+            <input type="text" class="team-name-input" id="edit-name-4" placeholder="隊伍名稱"
+                   oninput="onNameInput(4, this.value)">
+            <div class="score-display" id="edit-score-4">0</div>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="changeScore(4, -1)">−</button>
+                <input type="number" class="score-delta-input" id="score-delta-4" value="10" min="1" max="9999">
+                <button class="btn btn-plus"  onclick="changeScore(4,  1)">＋</button>
+            </div>
+        </div>
     </div>
 
     <!-- Log sidebar -->
@@ -604,7 +621,8 @@
             team0: '隊0對輔',
             team1: '隊1對輔',
             team2: '隊2對輔',
-            team3: '隊3對輔'
+            team3: '隊3對輔',
+            team4: '隊4對輔'
         };
 
         function renderLogs(logs) {
