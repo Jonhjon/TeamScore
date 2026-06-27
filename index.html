@@ -11,8 +11,6 @@
             --card-bg: #ffffff;
             --text-color: #333;
             --score-color: #e74c3c;
-            --btn-plus: #27ae60;
-            --btn-minus: #c0392b;
         }
 
         body {
@@ -49,8 +47,6 @@
             flex-direction: column;
             align-items: center;
             transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .team-card:hover {
@@ -64,8 +60,6 @@
             overflow: hidden;
             border: 5px solid #eee;
             margin-bottom: 15px;
-            position: relative;
-            cursor: pointer;
         }
 
         .team-image {
@@ -74,42 +68,12 @@
             object-fit: cover;
         }
 
-        .team-image-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-
-        .team-image-container:hover .team-image-overlay {
-            opacity: 1;
-        }
-
         .team-name {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--text-color);
             margin: 10px 0;
-            border: none;
-            background: transparent;
             text-align: center;
-            width: 100%;
-            cursor: text;
-        }
-
-        .team-name:focus {
-            outline: none;
-            border-bottom: 2px solid var(--primary-color);
         }
 
         .score-display {
@@ -126,6 +90,18 @@
             text-align: center;
         }
 
+        #conn-dot {
+            position: fixed;
+            top: 14px;
+            right: 16px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e74c3c;
+            transition: background 0.5s;
+            title: "連線狀態";
+        }
+
         @media (max-width: 600px) {
             .scoreboard-container {
                 grid-template-columns: 1fr;
@@ -134,13 +110,13 @@
     </style>
 </head>
 <body>
-
+    <div id="conn-dot"></div>
     <h1>🏆 隊伍分數顯示畫面</h1>
 
     <div class="scoreboard-container">
         <div class="team-card">
             <div class="team-image-container">
-                <img src="" alt="Team A" class="team-image" id="img1">
+                <img src="" alt="Team 1" class="team-image" id="img1">
             </div>
             <div class="team-name" id="name1"></div>
             <div class="score-display" id="score1">0</div>
@@ -148,16 +124,15 @@
 
         <div class="team-card">
             <div class="team-image-container">
-                <img src="" alt="Team B" class="team-image" id="img2">
+                <img src="" alt="Team 2" class="team-image" id="img2">
             </div>
             <div class="team-name" id="name2"></div>
-            <div class="team-members" id="members2"></div>
             <div class="score-display" id="score2">0</div>
         </div>
 
         <div class="team-card">
             <div class="team-image-container">
-                <img src="" alt="Team C" class="team-image" id="img3">
+                <img src="" alt="Team 3" class="team-image" id="img3">
             </div>
             <div class="team-name" id="name3"></div>
             <div class="score-display" id="score3">0</div>
@@ -165,10 +140,9 @@
 
         <div class="team-card">
             <div class="team-image-container">
-                <img src="" alt="Team D" class="team-image" id="img4">
+                <img src="" alt="Team 4" class="team-image" id="img4">
             </div>
             <div class="team-name" id="name4"></div>
-            <div class="team-members" id="members4"></div>
             <div class="score-display" id="score4">0</div>
         </div>
     </div>
@@ -177,75 +151,36 @@
         <p>💡 這是只讀顯示畫面，請在「控制畫面」修改分數與隊名。</p>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script>
-        const STORAGE_KEY = 'scoreboardDataV1';
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const db = firebase.database();
 
-        const defaultData = {
-            teams: [
-                {
-                    name: '紅隊',
-                    score: 0,
-                    image: 'https://placehold.co/150/FF5733/FFFFFF?text=1'
-                },
-                {
-                    name: '藍隊',                    
-                    score: 0,
-                    image: 'https://placehold.co/150/33C1FF/FFFFFF?text=2'
-                },
-                {
-                    name: '綠隊',                    
-                    score: 0,
-                    image: 'https://placehold.co/150/27AE60/FFFFFF?text=3'
-                },
-                {
-                    name: '黃隊',                    
-                    score: 0,
-                    image: 'https://placehold.co/150/F1C40F/FFFFFF?text=4'
-                }
-            ]
-        };
-
-        function loadData() {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                return defaultData;
-            }
-            try {
-                const parsed = JSON.parse(raw);
-                if (!parsed.teams || parsed.teams.length !== 4) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                    return defaultData;
-                }
-                return parsed;
-            } catch (e) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                return defaultData;
-            }
-        }
-
-        function render(data) {
-            data.teams.forEach((team, index) => {
-                const i = index + 1;
-                const img = document.getElementById('img' + i);
-                const name = document.getElementById('name' + i);
-                const score = document.getElementById('score' + i);
-                if (img) img.src = team.image;
-                if (name) name.textContent = team.name;
-                if (score) score.textContent = team.score;
+        function render(teams) {
+            teams.forEach((team, i) => {
+                const img   = document.getElementById('img'   + (i + 1));
+                const name  = document.getElementById('name'  + (i + 1));
+                const score = document.getElementById('score' + (i + 1));
+                if (img)   img.src           = team.imageUrl || '';
+                if (name)  name.textContent  = team.name     || '';
+                if (score) score.textContent = team.score    ?? 0;
             });
         }
 
-        let currentData = loadData();
-        render(currentData);
+        db.ref('teams').on('value', (snapshot) => {
+            const obj = snapshot.val();
+            if (!obj) return;
+            const arr = Object.keys(obj)
+                .sort((a, b) => Number(a) - Number(b))
+                .map(k => obj[k]);
+            render(arr);
+        });
 
-        setInterval(() => {
-            const latest = loadData();
-            if (JSON.stringify(latest) !== JSON.stringify(currentData)) {
-                currentData = latest;
-                render(currentData);
-            }
-        }, 500);
+        db.ref('.info/connected').on('value', (snap) => {
+            document.getElementById('conn-dot').style.background = snap.val() ? '#27ae60' : '#e74c3c';
+        });
     </script>
 </body>
 </html>

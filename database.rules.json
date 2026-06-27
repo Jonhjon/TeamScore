@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "teams": {
+      ".read": true,
+      "$teamIndex": {
+        ".write": true,
+        "score": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 30"
+        },
+        "imageUrl": {
+          ".validate": "newData.isString()"
+        }
+      }
+    },
+    "logs": {
+      ".read": true,
+      ".write": true,
+      "$logId": {
+        ".validate": "newData.hasChildren(['timestamp', 'actor', 'actionType', 'teamIndex'])"
+      }
+    }
+  }
+}
