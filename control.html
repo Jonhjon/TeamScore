@@ -471,7 +471,12 @@
                 Object.keys(obj).forEach(i => renderTeamCard(Number(i), obj[i]));
             });
 
-            db.ref('teams/_logs').limitToLast(80).on('value', renderLogs);
+            const logBuffer = [];
+            db.ref('teams/_logs').limitToLast(80).on('child_added', (snap) => {
+                logBuffer.push(snap.val());
+                if (logBuffer.length > 80) logBuffer.shift();
+                renderLogs(logBuffer);
+            });
 
             db.ref('.info/connected').on('value', (snap) => {
                 document.getElementById('conn-dot').style.background = snap.val() ? '#27ae60' : '#e74c3c';
@@ -596,18 +601,15 @@
             team3: '隊3對輔'
         };
 
-        function renderLogs(snapshot) {
+        function renderLogs(logs) {
             const panel = document.getElementById('log-entries');
-            const logs = [];
-            snapshot.forEach(child => logs.push(child.val()));
-            logs.reverse();
 
             if (logs.length === 0) {
                 panel.innerHTML = '<p style="color:#aaa;text-align:center;padding:20px;font-size:0.85rem;">尚無記錄</p>';
                 return;
             }
 
-            panel.innerHTML = logs.map(log => {
+            panel.innerHTML = [...logs].reverse().map(log => {
                 const time  = new Date(log.timestamp).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 const actor = ACTOR_LABELS[log.actor] || log.actor;
                 const action = ACTION_LABELS[log.actionType] || log.actionType;
