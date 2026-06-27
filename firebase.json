@@ -19,7 +19,8 @@
       }
     ]
   },
-  "database": {
-    "rules": "database.rules.json"
-  }
+  "database": [{
+    "rules": "database.rules.json",
+    "instance": "teamscore-e3094-default-rtdb"
+  }]
 }
