@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - claude/project-overview-C2sKn
+      - claude/deploy-recent-changes-VdHYN
 
 jobs:
   deploy:
