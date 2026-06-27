@@ -571,8 +571,12 @@
         function resetAllData() {
             if (!confirm('確定要重置所有設定（包含隊名、圖片、分數與操作紀錄）嗎？此動作無法復原。')) return;
             const updates = {};
-            DEFAULT_TEAMS.forEach((t, i) => { updates[i] = { ...t }; });
-            db.ref('teams').set(updates);
+            DEFAULT_TEAMS.forEach((t, i) => {
+                updates[i + '/name']     = t.name;
+                updates[i + '/score']    = t.score;
+                updates[i + '/imageUrl'] = t.imageUrl;
+            });
+            db.ref('teams').update(updates);
             db.ref('teams/_logs').remove().then(() => {
                 logBuffer.length = 0;
                 renderLogs([]);
