@@ -22,16 +22,18 @@ const PASSWORDS = {
     "red2026",
     "blue2026",
     "green2026",
-    "yellow2026"
+    "yellow2026",
+    "purple2026"
   ]
 };
 
-const TEAM_COLORS = ['#FF5733', '#33C1FF', '#27AE60', '#F1C40F'];
-const TEAM_TEXT_COLORS = ['#FFFFFF', '#FFFFFF', '#FFFFFF', '#000000'];
+const TEAM_COLORS = ['#FF5733', '#33C1FF', '#27AE60', '#F1C40F', '#9B59B6'];
+const TEAM_TEXT_COLORS = ['#FFFFFF', '#FFFFFF', '#FFFFFF', '#000000', '#FFFFFF'];
 
 const DEFAULT_TEAMS = [
   { name: "紅隊", score: 0, imageUrl: "https://placehold.co/150/FF5733/FFFFFF?text=紅" },
   { name: "藍隊", score: 0, imageUrl: "https://placehold.co/150/33C1FF/FFFFFF?text=藍" },
   { name: "綠隊", score: 0, imageUrl: "https://placehold.co/150/27AE60/FFFFFF?text=綠" },
-  { name: "黃隊", score: 0, imageUrl: "https://placehold.co/150/F1C40F/000000?text=黃" }
+  { name: "黃隊", score: 0, imageUrl: "https://placehold.co/150/F1C40F/000000?text=黃" },
+  { name: "紫隊", score: 0, imageUrl: "https://placehold.co/150/9B59B6/FFFFFF?text=紫" }
 ];
