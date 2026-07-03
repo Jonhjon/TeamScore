@@ -32,10 +32,17 @@
 
         .scoreboard-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 16px;
             width: 100%;
         }
+
+        .team-card:nth-child(1),
+        .team-card:nth-child(2) { grid-column: span 3; }
+
+        .team-card:nth-child(3),
+        .team-card:nth-child(4),
+        .team-card:nth-child(5) { grid-column: span 2; }
 
         .team-card {
             background-color: var(--card-bg);
